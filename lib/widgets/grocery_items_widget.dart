@@ -21,25 +21,42 @@ class _GroceryItemsState extends State<GroceryItems> {
     });
   }
 
+  _removeItem(GroceryItem groceryItem) {
+    setState(() {
+      _groceryItems.remove(groceryItem);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget screenBody =
+        const Center(child: Text('No item to display. Add a new item'));
+    if (_groceryItems.isNotEmpty) {
+      screenBody = ListView.builder(
+        itemCount: _groceryItems.length,
+        itemBuilder: (ctx, index) => Dismissible(
+          onDismissed: (direction) {
+            _removeItem(_groceryItems[index]);
+          },
+          key: ValueKey(_groceryItems[index].id),
+          child: ListTile(
+            leading: Container(
+              height: 24,
+              width: 24,
+              color: _groceryItems[index].category.color,
+            ),
+            title: Text(_groceryItems[index].name),
+            trailing: Text(_groceryItems[index].quantity.toString()),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text("Your Groceries"),
         actions: [IconButton(onPressed: _addItem, icon: const Icon(Icons.add))],
       ),
-      body: ListView.builder(
-        itemCount: _groceryItems.length,
-        itemBuilder: (ctx, index) => ListTile(
-          leading: Container(
-            height: 24,
-            width: 24,
-            color: _groceryItems[index].category.color,
-          ),
-          title: Text(_groceryItems[index].name),
-          trailing: Text(_groceryItems[index].quantity.toString()),
-        ),
-      ),
+      body: screenBody,
     );
   }
 }
