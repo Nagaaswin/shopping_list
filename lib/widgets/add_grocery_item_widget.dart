@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../data/categories_data.dart';
+
 class AddGroceryItem extends StatefulWidget {
   const AddGroceryItem({super.key});
 
@@ -16,9 +18,81 @@ class _AddGroceryItemState extends State<AddGroceryItem> {
       appBar: AppBar(
         title: const Text('Add Your Grocery Item'),
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(12),
-        child: Text('add item'),
+      body: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Form(
+          child: Column(
+            children: [
+              TextFormField(
+                maxLength: 50,
+                decoration: const InputDecoration(
+                  label: Text('Name'),
+                ),
+                validator: (value) {
+                  return 'Testing';
+                },
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        label: Text('Quantity'),
+                      ),
+                      initialValue: '1',
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: DropdownButtonFormField(
+                      items: [
+                        for (final category in categories.entries)
+                          DropdownMenuItem(
+                            value: category.value,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  color: category.value.color,
+                                ),
+                                const SizedBox(
+                                  width: 6,
+                                ),
+                                Text(
+                                  category.value.name,
+                                ),
+                              ],
+                            ),
+                          )
+                      ],
+                      onChanged: (value) {},
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text('Reset'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: const Text('Add item'),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
