@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:shopping_list/data/grocery_items_data.dart';
 
 class GroceryItems extends StatelessWidget {
@@ -6,36 +6,21 @@ class GroceryItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (final groceryItem in groceryItems)
-          Container(
-            padding: const EdgeInsets.only(top: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: SizedBox(
-                    width: 15.0,
-                    height: 15.0,
-                    child: DecoratedBox(
-                      decoration:
-                          BoxDecoration(color: groceryItem.category.color),
-                    ),
-                  ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Your Groceries"),
+      ),
+      body: ListView.builder(
+          itemCount: groceryItems.length,
+          itemBuilder: (ctx, index) => ListTile(
+                leading: Container(
+                  height: 24,
+                  width: 24,
+                  color: groceryItems[index].category.color,
                 ),
-                Text(groceryItem.name),
-                Container(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: Text(
-                    groceryItem.quantity.toString(),
-                  ),
-                )
-              ],
-            ),
-          )
-      ],
+                title: Text(groceryItems[index].name),
+                trailing: Text(groceryItems[index].quantity.toString()),
+              )),
     );
   }
 }
