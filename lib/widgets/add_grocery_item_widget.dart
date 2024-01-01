@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shopping_list/enums/categories_enum.dart';
 import 'package:shopping_list/models/category_model.dart';
-import 'package:shopping_list/models/grocery_item_model.dart';
 
 import '../data/categories_data.dart';
 
@@ -20,17 +22,25 @@ class _AddGroceryItemState extends State<AddGroceryItem> {
   int _enteredQuantity = 1;
   Category? _selectedValue = categories[Categories.vegetables];
 
-  _addItem() {
+  _addItem() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Navigator.of(context).pop(
-        GroceryItem(
-          id: DateTime.now().toString(),
-          name: _enteredName,
-          quantity: _enteredQuantity,
-          category: _selectedValue!,
-        ),
-      );
+      final url = Uri.https(
+          'angular-backend-4c6f4-default-rtdb.asia-southeast1.firebasedatabase.app',
+          'shopping-list.json');
+      final response = await http.post(url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            "name": _enteredName,
+            "quantity": _enteredQuantity,
+            "category": _selectedValue!.name,
+          }));
+      print(response.statusCode);
+      print(response.body);
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context).pop();
     }
   }
 
