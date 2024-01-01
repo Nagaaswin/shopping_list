@@ -35,8 +35,6 @@ class _AddGroceryItemState extends State<AddGroceryItem> {
             "quantity": _enteredQuantity,
             "category": _selectedValue!.name,
           }));
-      print(response.statusCode);
-      print(response.body);
       if (!context.mounted) {
         return;
       }
