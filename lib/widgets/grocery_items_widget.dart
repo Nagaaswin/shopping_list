@@ -16,6 +16,7 @@ class GroceryItems extends StatefulWidget {
 
 class _GroceryItemsState extends State<GroceryItems> {
   List<GroceryItem> _groceryItems = [];
+  bool _loadingItems = false;
 
   @override
   initState() {
@@ -24,6 +25,7 @@ class _GroceryItemsState extends State<GroceryItems> {
   }
 
   _loadItems() async {
+    _loadingItems = true;
     final url = Uri.https(
         'angular-backend-4c6f4-default-rtdb.asia-southeast1.firebasedatabase.app',
         'shopping-list.json');
@@ -68,6 +70,10 @@ class _GroceryItemsState extends State<GroceryItems> {
   Widget build(BuildContext context) {
     Widget screenBody =
         const Center(child: Text('No item to display. Add a new item'));
+    if (_loadingItems) {
+      screenBody = const Center(child: CircularProgressIndicator());
+    }
+
     if (_groceryItems.isNotEmpty) {
       screenBody = ListView.builder(
         itemCount: _groceryItems.length,

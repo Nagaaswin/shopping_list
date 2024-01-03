@@ -22,10 +22,16 @@ class _AddGroceryItemState extends State<AddGroceryItem> {
   String _enteredName = '';
   int _enteredQuantity = 1;
   Category? _selectedValue = categories[Categories.vegetables];
+  bool _sendingItem = false;
 
   _addItem() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
+      setState(() {
+        _sendingItem = true;
+      });
+
       final url = Uri.https(
           'angular-backend-4c6f4-default-rtdb.asia-southeast1.firebasedatabase.app',
           'shopping-list.json');
@@ -145,14 +151,18 @@ class _AddGroceryItemState extends State<AddGroceryItem> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () {
-                      _formKey.currentState!.reset();
-                    },
+                    onPressed: _sendingItem
+                        ? null
+                        : () {
+                            _formKey.currentState!.reset();
+                          },
                     child: const Text('Reset'),
                   ),
                   ElevatedButton(
-                    onPressed: _addItem,
-                    child: const Text('Add item'),
+                    onPressed: _sendingItem ? null : _addItem,
+                    child: _sendingItem
+                        ? const Center(child: CircularProgressIndicator())
+                        : const Text('Add item'),
                   ),
                 ],
               )
