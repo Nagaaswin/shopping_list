@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shopping_list/enums/categories_enum.dart';
 import 'package:shopping_list/models/category_model.dart';
+import 'package:shopping_list/models/grocery_item_model.dart';
 
 import '../data/categories_data.dart';
 
@@ -35,10 +36,15 @@ class _AddGroceryItemState extends State<AddGroceryItem> {
             "quantity": _enteredQuantity,
             "category": _selectedValue!.name,
           }));
+      final Map<String, dynamic> jsonRes = json.decode(response.body);
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(GroceryItem(
+          id: jsonRes['name'],
+          name: _enteredName,
+          quantity: _enteredQuantity,
+          category: _selectedValue!));
     }
   }
 
