@@ -31,13 +31,21 @@ class _GroceryItemsState extends State<GroceryItems> {
     final url = Uri.https(
         'angular-backend-4c6f4-default-rtdb.asia-southeast1.firebasedatabase.app',
         'shopping-list.json');
-    http.Response response = await http.get(url);
-    if (response.statusCode >= 400) {
-      setState(() {
-        log('Error while fetching data!!', error: response.statusCode);
-        _error = 'Failed to fetch data';
-      });
-    } else {
+    try {
+      http.Response response = await http.get(url);
+      if (response.statusCode >= 400) {
+        setState(() {
+          log('Error while fetching data!!', error: response.statusCode);
+          _error = 'Failed to fetch data';
+        });
+        return;
+      }
+      if (response.body == 'null') {
+        setState(() {
+          _loadingItems = false;
+        });
+        return;
+      }
       Map<String, dynamic> catItems = json.decode(response.body);
       List<GroceryItem> loadedItems = [];
       for (final item in catItems.entries) {
@@ -54,6 +62,8 @@ class _GroceryItemsState extends State<GroceryItems> {
       setState(() {
         _groceryItems = loadedItems;
       });
+    } catch (error) {
+      log("Error occurred while loading items", error: error);
     }
   }
 
