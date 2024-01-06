@@ -29,7 +29,7 @@ class _GroceryItemsState extends State<GroceryItems> {
   _loadItems() async {
     _loadingItems = true;
     final url = Uri.https(
-        'angular-4c6f4-default-rtdb.asia-southeast1.firebasedatabase.app',
+        'angular-backend-4c6f4-default-rtdb.asia-southeast1.firebasedatabase.app',
         'shopping-list.json');
     http.Response response = await http.get(url);
     if (response.statusCode >= 400) {
@@ -69,10 +69,21 @@ class _GroceryItemsState extends State<GroceryItems> {
     });
   }
 
-  _removeItem(GroceryItem groceryItem) {
+  _removeItem(GroceryItem groceryItem) async {
+    var index = _groceryItems.indexOf(groceryItem);
     setState(() {
       _groceryItems.remove(groceryItem);
     });
+    final url = Uri.https(
+        'angular-backend-4c6f4-default-rtdb.asia-southeast1.firebasedatabase.app',
+        'shopping-list/${groceryItem.id}.json');
+    http.Response response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      setState(() {
+        log('Error while deleting data!!', error: response.statusCode);
+        _groceryItems.insert(index, groceryItem);
+      });
+    }
   }
 
   @override
