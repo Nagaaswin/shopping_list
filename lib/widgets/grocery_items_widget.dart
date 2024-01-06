@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +18,7 @@ class GroceryItems extends StatefulWidget {
 class _GroceryItemsState extends State<GroceryItems> {
   List<GroceryItem> _groceryItems = [];
   bool _loadingItems = false;
+  String? _error;
 
   @override
   initState() {
@@ -27,25 +29,32 @@ class _GroceryItemsState extends State<GroceryItems> {
   _loadItems() async {
     _loadingItems = true;
     final url = Uri.https(
-        'angular-backend-4c6f4-default-rtdb.asia-southeast1.firebasedatabase.app',
+        'angular-4c6f4-default-rtdb.asia-southeast1.firebasedatabase.app',
         'shopping-list.json');
     http.Response response = await http.get(url);
-    Map<String, dynamic> catItems = json.decode(response.body);
-    List<GroceryItem> loadedItems = [];
-    for (final item in catItems.entries) {
-      Category category = categories.entries
-          .firstWhere((categoryItem) =>
-              categoryItem.value.name == item.value['category'])
-          .value;
-      loadedItems.add(GroceryItem(
-          id: item.key,
-          name: item.value['name'],
-          quantity: item.value['quantity'],
-          category: category));
+    if (response.statusCode >= 400) {
+      setState(() {
+        log('Error while fetching data!!', error: response.statusCode);
+        _error = 'Failed to fetch data';
+      });
+    } else {
+      Map<String, dynamic> catItems = json.decode(response.body);
+      List<GroceryItem> loadedItems = [];
+      for (final item in catItems.entries) {
+        Category category = categories.entries
+            .firstWhere((categoryItem) =>
+                categoryItem.value.name == item.value['category'])
+            .value;
+        loadedItems.add(GroceryItem(
+            id: item.key,
+            name: item.value['name'],
+            quantity: item.value['quantity'],
+            category: category));
+      }
+      setState(() {
+        _groceryItems = loadedItems;
+      });
     }
-    setState(() {
-      _groceryItems = loadedItems;
-    });
   }
 
   _addItem() async {
@@ -92,6 +101,11 @@ class _GroceryItemsState extends State<GroceryItems> {
             trailing: Text(_groceryItems[index].quantity.toString()),
           ),
         ),
+      );
+    }
+    if (_error != null) {
+      screenBody = Center(
+        child: Text(_error!),
       );
     }
     return Scaffold(
